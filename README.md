@@ -34,7 +34,7 @@ document.querySelectorAll('.key').forEach(elem =>
 
 ###2 JS CSS CLOCK
 Clock elements created in HTML, hands transitions already determined in CSS. It is necessary to write JS code to activate these elements. 
-
+```
 'use strict';
 window.setInterval(()=> {
   const now = new Date();
@@ -52,7 +52,7 @@ window.setInterval(()=> {
   minutesHand.style.transform = `rotate(${minutesDegrees}deg)`;
   hoursHand.style.transform = `rotate(${hoursDegrees}deg)`;
 }, 1000)
-
+```
 ###3 CSS Variables
 We need to add event listener for all the inputs and make image processing on the page interactive.
 
