@@ -57,7 +57,35 @@
   <audio data-key="75" src="sounds/tom.wav"></audio>
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
-  <script type="text/javascript" src="1.js"></script>
+  <script>
+    const playAudio = ({key}) => {
+      const keyCode = key
+                        .toUpperCase()
+                        .charCodeAt();
+      const audio = document
+                      .querySelector(`audio[data-key="${keyCode}"]`);
+      if (!audio) return null;
+      new Audio(audio.src)
+            .play();
 
+      const keyButton = document
+                      .querySelector(`div[data-key="${keyCode}"]`);
+      keyButton
+        .classList
+        .add('playing');
+    };
+
+    const rollbackTransition = ({ target: { classList }, propertyName }) => {
+      if (classList.contains('playing')
+      && propertyName === 'transform') {
+        classList.remove('playing');
+      }
+    };
+
+    document.addEventListener('keydown', (e) => playAudio(e));
+    document.querySelectorAll('.key')
+                .forEach(elem => elem.addEventListener('transitionend', rollbackTransition));
+
+  </script>
 </body>
 </html>
