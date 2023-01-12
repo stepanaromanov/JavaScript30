@@ -1,10 +1,11 @@
 # javascript_30
 ### Vanilla JavaScript
 
-###1 DRUM KIT
+1 DRUM KIT
+
 When user presses key button it should play corresponding audio. Style of the key should be changed also.
 After sound play key style returns to initial state.
-
+```
 'use strict';
 const playAudio = ({key}) => {
   const keyCode = key
@@ -30,9 +31,10 @@ const rollbackTransition = ({ target: { classList }, propertyName }) => {
 document.addEventListener('keydown', (e) => playAudio(e));
 document.querySelectorAll('.key').forEach(elem =>
          elem.addEventListener('transitionend', rollbackTransition));
+```
 
+2 JS CSS CLOCK
 
-###2 JS CSS CLOCK
 Clock elements created in HTML, hands transitions already determined in CSS. It is necessary to write JS code to activate these elements. 
 ```
 'use strict';
@@ -53,9 +55,10 @@ window.setInterval(()=> {
   hoursHand.style.transform = `rotate(${hoursDegrees}deg)`;
 }, 1000)
 ```
-###3 CSS Variables
-We need to add event listener for all the inputs and make image processing on the page interactive.
+3 CSS Variables
 
+We need to add event listener for all the inputs and make image processing on the page interactive.
+```
 'use strict';
 const handleUpdate = ({ target: { name, value, dataset: { sizing } } }) => {
   document.documentElement.style.setProperty(`--${name}`, `${value}${sizing || ''}`);
@@ -64,3 +67,4 @@ document.querySelectorAll('.controls input').forEach((input) => {
             input.addEventListener("change", handleUpdate)
             input.addEventListener("mousemove", handleUpdate)
 })
+```
