@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+      <li>Filter for a city</li>
+      <li>or a state</li>
+    </ul>
+  </form>
+<script>
+  'use strict';
+
+  const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  const cities = [];
+
+  const numberWithCommas = (x) => (
+    x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  )
+
+  fetch(endpoint)
+    .then(blob => blob.json())
+    .then(data => cities.push(...data));
+
+  const displayMatching = (element) => {
+    const html = cities
+            .filter(place => {
+                const regex = new RegExp(element.value, 'gi')
+                return regex.test(place.city) || regex.test(place.state)
+            }).map(place => {
+                return `
+                  <li>
+                    <span class="name">${place.city}, ${place.state}</span>
+                    <span class="population">${numberWithCommas(place.population)}</span>
+                  </li>`;
+            }).join('');
+    suggestionsInput.innerHTML = html;
+  }
+
+  const searchInput = document.querySelector('.search');
+  const suggestionsInput = document.querySelector('.suggestions');
+
+  searchInput.addEventListener('keyup', (element) => displayMatching(searchInput));
+
+</script>
+</body>
+</html>
