@@ -69,6 +69,7 @@ document.querySelectorAll('.controls input').forEach((input) => {
 })
 ```
 #4 ARRAY CARDIO DAY 1
+
 Practicing operations with arrays
 ```
 // 1. Filter the list of inventors for those who were born in the 1500's
