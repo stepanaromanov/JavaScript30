@@ -120,6 +120,7 @@ const transportation = data.reduce((obj, item) => {
 ```
 
 05 FLEX PANEL GALLERY
+
 Adding interactivity to block transiotions.
 ```
 'use strict'
@@ -142,6 +143,7 @@ document.querySelectorAll('.panel')
 ```
 
 06 TYPE AHEAD
+
 Fetching and filtering cities data with regular expressions 
 ```
 'use strict';
@@ -178,6 +180,7 @@ const suggestionsInput = document.querySelector('.suggestions');
 searchInput.addEventListener('keyup', (element) => displayMatching(searchInput));
 ```
 07 ARRAY CARDIO DAY 2
+
 Filtering elements of array on condition
 ```
 const people = [
@@ -217,6 +220,7 @@ const filteredComments = comments
                             comments.indexOf(comment) !== findIndex))
 ```
 08 HTML CANVAS
+
 Creating canvas for drawing
 ```
 const canvas = document.querySelector('#draw');
@@ -271,4 +275,85 @@ canvas.addEventListener('mousedown', () => {
 });
 canvas.addEventListener('mouseup', () => isDrawing = false);
 canvas.addEventListener('mouseout', () => isDrawing = false);
+```
+09 DEV TOOLS DOMINATION
+
+Practicing operations with console logging
+
+```
+const dogs = [{ name: 'Snickers', age: 2 }, { name: 'hugo', age: 8 }];
+
+function makeGreen() {
+  const p = document.querySelector('p');
+  p.style.color = '#BADA55';
+  p.style.fontSize = '50px';
+}
+
+// Regular
+console.log('hello');
+// Interpolated
+console.log('hello, I am %s string', 'some variable');
+// Styled
+console.log('%chello I am some styled text', 'font-size: 16px; background: red;');
+// warning!
+console.warn('OH NOOO');
+// Error :|
+console.error('OH ERROR');
+// Info
+console.info('some fact');
+// Testing
+const p = document.querySelector('p');
+console.assert(p.classList.contains('ouch'), 'that is wrong');
+// clearing
+//console.clear()
+// Viewing DOM Elements
+console.log(p);
+console.dir(p);
+// Grouping together
+dogs.forEach(dog => {
+  console.groupCollapsed(`${dog.name}`);
+  //console.group(`${dog.name}`);      
+  console.log(`This is a ${dog.name}`);
+  console.log(`${dog.name} is ${dog.age * 7} dog years old`);
+  console.groupEnd(`${dog.name}`);
+});
+// counting
+console.count('Wes');
+console.count('Wes');
+console.count('Wes');
+
+// timing
+console.time('fetching data');
+fetch('https://api.github.com/users/wesbos')
+  .then(data => data.json())
+  .then(data => {
+    console.timeEnd('fetching data')
+  })
+// table data
+console.table(dogs)
+```
+10 HOLD SHIFT AND CHECK CHECKBOXES
+
+Making interactive 'to do' list with shift-key functionality
+```
+'use strict';
+
+const allCheckboxes = [...document.querySelectorAll('.inbox input[type="checkbox"]')]
+
+let lastChecked;
+
+const handleCheck = ({ target, shiftKey }) => {
+  if (shiftKey && lastChecked) {
+    const firstInd = allCheckboxes.indexOf(target);
+    const lastInd = allCheckboxes.indexOf(lastChecked);
+    const newState = target.checked;
+    const subset = [...allCheckboxes.slice(Math.min(firstInd, lastInd) + 1, Math.max(firstInd, lastInd))];
+    subset.forEach(checkbox => checkbox.checked = newState)
+  }
+  lastChecked = target;
+}
+
+allCheckboxes.forEach(checkbox => 
+    checkbox.addEventListener('click', handleCheck)
+)
 ```
