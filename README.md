@@ -539,3 +539,147 @@ const wes = {
 const dev = Object.assign({}, wes);
 const dev2 = JSON.parse(JSON.stringify(wes));
 ```
+15 LOCAL STORAGE 
+
+Operating with local storage: adding and removing items from list. 
+
+```
+'use strict'
+
+const addItems = document.querySelector('.add-items');
+const itemsList = document.querySelector('.plates');
+const clear = document.querySelector('.clear');
+let items = localStorage.getItem('items').length > 0 ? JSON.parse(localStorage.getItem('items')) : [];
+
+const populateList = (plates = [], platesList) => {
+  platesList.innerHTML = plates.map((plate, i) => {
+    return `
+      <li>
+        <input type="checkbox" data-index=${i} id="item${i}" ${plate.done ? 'checked' : ''} />
+        <label for="item${i}">${plate.text}</label>
+      </li>
+    `;
+  }).join('');
+}
+
+const addItem = (event) => {
+  event.preventDefault();
+  const text = event.target.querySelector('input[name=item]').value;
+  const item = {
+    text,
+    done: false
+  };
+
+  items.push(item);
+  populateList(items, itemsList);
+  localStorage.setItem('items', JSON.stringify(items));
+  event.target.reset();
+}
+
+const toggleDone = (event) => {
+  if (!event.target.matches('input')) return;
+
+  const elem = event.target;
+  const index = elem.dataset.index;
+
+  items[index].done = !items[index].done;
+  localStorage.setItem('items', JSON.stringify(items));
+  populateList(items, itemsList);
+}
+
+const clearStorage = (event) => {
+  items = [];
+  addItems.reset();
+  localStorage.setItem('items', items);
+  populateList(items, itemsList);
+}
+
+const checkBoxes = document.querySelectorAll('input');
+
+addItems.addEventListener('submit', addItem);
+clear.addEventListener('click', clearStorage);
+itemsList.addEventListener('click', toggleDone);
+
+populateList(items, itemsList);
+```
+16 MOUSE MOVE SHADOW
+
+Adding shadow depending on mouse cursor position
+
+```
+const hero = document.querySelector('.hero');
+const text = hero.querySelector('h1');
+const walk = 100; 
+
+const shadow = ({ target, offsetX, offsetY }) => {
+  const { offsetWidth: width, offsetHeight: height } = hero;
+  let { offsetX: x, offsetY: y } = event;
+  if (this !== event.target) {
+    x += target.offsetLeft;
+    y += target.offsetTop;
+  }
+
+  const xWalk = (x / width * walk) - (walk / 2);
+  const yWalk = (y / height * walk) - (walk / 2);
+
+  text.style.textShadow = `${xWalk}px ${yWalk}px 0 rgba(255,0,255,0.7),
+                           ${xWalk * -1}px ${yWalk}px 0 rgba(0,255,255,0.7),
+                           ${yWalk}px ${xWalk * -1}px 0 rgba(0,255,0,0.7),
+                           ${yWalk * -1}px ${xWalk}px 0 rgba(0,0,255,0.7)
+                          `;
+}
+
+hero.addEventListener('mousemove', shadow );
+```
+
+17 SORT WITHOUT ARTICLES
+
+sorting the array with advanced condition 
+
+```
+'use strict';
+
+const bands = ['The Plot in You', 'The Devil Wears Prada', 'Pierce the Veil', 'Norma Jean', 'The Bled', 'Say Anything', 'The Midway State', 'We Came as Romans', 'Counterparts', 'Oh, Sleeper', 'A Skylit Drive', 'Anywhere But Here', 'An Old Dog'];
+
+const regex = new RegExp('^(a |the |an )', 'i')
+
+const strip = (bandName) => {
+  return bandName.replace(regex, '').trim();
+}
+
+const sortedBands = bands.sort((a, b) => {
+  return strip(a) > strip(b) ? 1 : -1;
+})
+
+document.getElementById('bands')
+  .append(...sortedBands.map((band) => {
+    const li = document.createElement('li');
+    li.innerHTML = band;
+    return li;
+  })
+);
+```
+
+18 ADDING UP TIME WITH REDUCE
+
+Using all the time length data we combine it to get total playlist duration
+
+```
+'use strict'
+
+const timeNodes = [...document.querySelectorAll('[data-time]')];
+
+const seconds = timeNodes
+  .map(node => node.dataset.time)
+  .map(timeCode => {
+    const [mins, secs] = timeCode.split(':')
+                                 .map(parseFloat)
+    return (mins * 60) + secs})
+  .reduce((total, seconds) => total + seconds)
+
+const hours = Math.floor(seconds / 3600);
+const minutes = Math.floor((seconds % 3600) / 60);
+const secondsLeft = seconds - (hours * 3600) - (minutes * 60);
+
+console.log(`Total duration is ${hours} hours ${minutes} minutes ${secondsLeft} seconds.`)
+```
