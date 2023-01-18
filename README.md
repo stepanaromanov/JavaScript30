@@ -433,3 +433,109 @@ window.addEventListener('keyup', (event) => {
   }
 })
 ```
+13 SLIDE IN ON SCROLL
+
+Adding slide image animation during scrolling.
+```
+function debounce(func, wait = 20, immediate = true) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+
+const sliderImages = document.querySelectorAll('.slide-in');
+const checkSlide = () => {
+  sliderImages.forEach((sliderImage) => {
+    const slideInAt = (window.scrollY + window.innerHeight) - sliderImage.height / 2;
+    const imageBottom = sliderImage.offsetTop + sliderImage.height;
+    const isHalfShown = slideInAt > sliderImage.offsetTop;
+    const isNotScrolled = window.scrollY < imageBottom;
+    isNotScrolled && isHalfShown ? sliderImage.classList.add('active') :sliderImage.classList.remove('active');
+  });
+}
+
+window.addEventListener('scroll', debounce(checkSlide));
+``` 
+14 JAVASCRIPT REFERENCES VS COPYING
+
+Learning how differ various types of variables when referencing to or deep copying them.
+
+```
+// start with strings, numbers and booleans
+let age = 100;
+let age2 = age;
+console.log(age, age2);
+age = 200;
+console.log(age, age2);
+
+let name = 'Wes';
+let name2 = name;
+console.log(name, name2);
+name = 'wesley'
+console.log(name, name2);
+
+// Let's say we have an array
+const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+
+// and we want to make a copy of it.
+const team = players;
+
+// You might think we can just do something like this:
+team[3] = 'Lux';
+
+// however what happens when we update that array?
+// now here is the problem!
+// oh no - we have edited the original array too!
+// Why? It's because that is an array reference, not an array copy. They both point to the same array!
+// So, how do we fix this? We take a copy instead!
+const team2 = players.slice();
+
+// one way
+// or create a new array and concat the old one in
+const team3 = [].concat(players);
+
+// or use the new ES6 Spread
+const team4 = [...players];
+const team5 = Array.from(players);
+
+// now when we update it, the original one isn't changed
+// The same thing goes for objects, let's say we have a person object
+
+// with Objects
+const person = {
+  name: 'Wes Bos',
+  age: 80
+};
+
+// and think we make a copy:
+const captain = person;
+// captain.age = 99; doesn't work
+
+// how do we take a copy instead?
+const cap2 = Object.assign({}, person, { number: 99, age: 12});
+
+// We will hopefully soon see the object ...spread
+const cap3 = {...person};
+
+// Things to note - this is only 1 level deep - both for Arrays and Objects. lodash has a cloneDeep method, but you should think twice before using it.
+const wes = {
+  name: 'wes',
+  age: 100,
+  social: {
+    twitter: '@name',
+    facebook: 'name.surname'
+  }
+}
+
+const dev = Object.assign({}, wes);
+const dev2 = JSON.parse(JSON.stringify(wes));
+```
