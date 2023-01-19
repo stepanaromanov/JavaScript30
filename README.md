@@ -125,12 +125,12 @@ Adding interactivity to block transiotions.
 ```
 'use strict'
 
-function toggleOpen() {
+const toggleOpen = () => {
   this.classList.toggle('open');
 }
 
-function toggleActive(e) {
-  if (e.propertyName.includes('flex')) {
+const toggleActive = (event) => {
+  if (event.propertyName.includes('flex')) {
     this.classList.toggle('open-active');
   }
 }
@@ -283,7 +283,7 @@ Practicing operations with console logging
 ```
 const dogs = [{ name: 'Snickers', age: 2 }, { name: 'hugo', age: 8 }];
 
-function makeGreen() {
+const makeGreen = () => {
   const p = document.querySelector('p');
   p.style.color = '#BADA55';
   p.style.fontSize = '50px';
@@ -682,4 +682,159 @@ const minutes = Math.floor((seconds % 3600) / 60);
 const secondsLeft = seconds - (hours * 3600) - (minutes * 60);
 
 console.log(`Total duration is ${hours} hours ${minutes} minutes ${secondsLeft} seconds.`)
+```
+
+19 - WEBCAM FUN
+
+Creating javascript web cam app with following functionality: color filters, making and downloading snapshots, audio sounds
+
+```
+const video = document.querySelector('.player');
+const canvas = document.querySelector('.photo');
+const ctx = canvas.getContext('2d');
+const strip = document.querySelector('.strip');
+const snap = document.querySelector('.snap');
+
+const getVideo = () => {
+  navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    .then(stream => {
+      video.srcObject = stream;
+      video.play();
+    })
+    .catch(err => {
+      console.error(`ERROR:`, err)
+    })
+}
+
+const paintToCanvas = () => {
+  const [width, height] = [video.videoWidth, video.videoHeight];
+  canvas.width = width;
+  canvas.height = height;
+
+  return setInterval(() => {
+    ctx.drawImage(video, 0, 0, width, height);
+    let pixels = ctx.getImageData(0, 0, width, height);
+    //pixels = redEffect(pixels);
+    pixels = rgbSplit(pixels);
+    ctx.globalAlpha = 0.1;
+    ctx.putImageData(pixels, 0, 0);
+  }, 16);
+}
+
+const takePhoto = () => {
+  snap.currentTime = 0;
+  snap.play();
+
+  const data = canvas.toDataURL('image/jpeg');
+  const link = document.createElement('a');
+  link.href = data;
+  link.setAttribute('download', 'handsome');
+  link.innerHTML = `<img src="${data}" alt="handsome man" />`
+  strip.insertBefore(link, strip.firstChild);
+}
+
+const redEffect = (pixels) => {
+  for (let i = 0; i < pixels.data.length; i += 4) {
+    pixels.data[i + 0] = pixels.data[i + 0] + 100; // RED
+  }
+  return pixels;
+}
+
+const rgbSplit = (pixels) => {
+  for (let i = 0; i < pixels.data.length; i += 4) {
+    pixels.data[i - 150] = pixels.data[i + 0] + 100; // RED
+    pixels.data[i + 100] = pixels.data[i + 1] + 50; //GREEN
+    pixels.data[i - 150] = pixels.data[i + 2] * 0.5; //BLUE
+  }
+  return pixels;
+}
+
+getVideo();
+
+video.addEventListener('canplay', paintToCanvas)
+document.querySelector(".takePhoto").addEventListener("click", takePhoto);
+```
+
+20 - SPEECH DETECTION
+
+Creating speech recognition interface which uses microphone
+
+```
+'use strict'
+window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+const recognition = new SpeechRecognition();
+recognition.interimResults = true;
+recognition.lang = 'en-US';
+
+let p = document.createElement('p');
+const words = document.querySelector('.words');
+words.appendChild(p);
+
+recognition.addEventListener('result', event => {
+  const transcript = [...event.results]
+      .map(result => result[0])
+      .map(result => result.transcript)
+      .join('')
+
+      p.textContent = transcript;
+      if (event.results[0].isFinal) {
+        p = document.createElement('p');
+        words.appendChild(p);
+      }
+});
+
+recognition.addEventListener('end', recognition.start);
+recognition.start();
+``` 
+
+21 - GEOLOCATION
+
+Creating geo location interface
+
+```
+'use strict'
+
+const arrow = document.querySelector('.arrow');
+const speed = document.querySelector('.speed-value');
+
+navigator.geolocation.watchPosition((data) => {
+  speed.textContent = Math.round(data.coords.speed);
+  arrow.style.transform = `rotate(${data.coords.heading}deg)`;
+}, (err) => {
+  console.log(err);
+  alert('Need permission');
+});
+```
+
+22 - FOLLOW ALONG LINK HIGHLIGHTER
+
+Highlight page links when mouse hover over them
+
+```
+'use strict'
+
+const highlight = document.createElement('span');
+highlight.classList.add('highlight');
+document.body.append(highlight);
+
+const highlightLink = ({ target }) => {
+  const linkCoords = target.getBoundingClientRect();
+  const coords = {
+    width: linkCoords.width,
+    height: linkCoords.height,
+    top: linkCoords.top + window.scrollY,
+    left: linkCoords.left + window.scrollX
+  };
+
+  highlight.style.width = `${coords.width}px`;
+  highlight.style.height = `${coords.height}px`;
+  highlight.style.transform = `translate(${coords.left}px, ${coords.top}px)`;
+}
+
+document
+  .querySelectorAll('a')
+  .forEach(link => {
+            link.addEventListener('mouseenter', highlightLink)
+          });
 ```
