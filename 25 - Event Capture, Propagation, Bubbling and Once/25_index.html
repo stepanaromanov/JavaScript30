@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Understanding JavaScript's Capture</title>
+</head>
+<body class="bod">
+
+  <div class="one">
+    <div class="two">
+      <div class="three">
+      </div>
+    </div>
+  </div>
+
+<style>
+  html {
+    box-sizing: border-box;
+  }
+  
+  *, *:before, *:after { 
+    box-sizing: inherit; 
+  }
+
+  div {
+    width: 100%;
+    padding: 100px;
+  }
+
+  .one {
+    background: thistle;
+  }
+
+  .two {
+    background: mistyrose;
+  }
+
+  .three {
+    background: coral;
+  }
+</style>
+
+<button class="btn"></button>
+<script>
+  const button = document.querySelector('.btn');
+  const divs = document.querySelectorAll('div');
+
+  const logText = (target) => {
+    console.log(target)
+    target.stopPropagation(); 
+    // stop bubbling, will not ripple and trigger events in other divs
+  }
+
+  divs.forEach(div => div.addEventListener('click', logText, {
+      capture: false
+  }));
+  // capture - will trigger events from bottom if false
+
+  button.addEventListener('click', () => {
+    console.log('click!')
+  }, {
+    once: true
+  })
+  // once - unbounding, removing from click event
+</script>
+</body>
+</html>

@@ -838,3 +838,149 @@ document
             link.addEventListener('mouseenter', highlightLink)
           });
 ```
+
+23 - SPEECH SYNTHESIS
+
+Speech synthesis from text message with selected language, voice, rate and pitch
+
+```
+let voices = [];
+
+const voicesDropdown = document.querySelector('[name="voice"]');
+const options = document.querySelectorAll('[type="range"], [name="text"]');
+const speakButton = document.querySelector('#speak');
+const stopButton = document.querySelector('#stop');
+
+const msg = new SpeechSynthesisUtterance();
+msg.text = document.querySelector('[name="text"]').value;
+
+populateVoices = ({ target }) => {
+  voices = target.getVoices();
+  voicesDropdown.innerHTML = '';
+  voicesDropdown.append(...voices.map(voice => {
+    const option = document.createElement('option');
+    option.setAttribute('value', voice.name);
+    option.textContent = `${voice.name} ${voice.lang}`;
+    return option;
+  }));
+}
+
+const setVoice = ({ target }) => {
+  console.log(target.value)
+  msg.voice = voices.find(voice => voice.name === target.value);
+  toggle();
+}
+
+const toggle = (startOver = true) => () => {
+  speechSynthesis.cancel();
+  if (startOver) {
+    speechSynthesis.speak(msg);
+  }
+}
+
+const setOption = ({ target }) => {
+  msg[target.name] = target.value;
+  toggle();
+}
+
+speechSynthesis.addEventListener('voiceschanged', populateVoices);
+voicesDropdown.addEventListener('change', setVoice);
+options.forEach(option => option.addEventListener('change', setOption));
+speakButton.addEventListener('click', toggle())
+stopButton.addEventListener('click', toggle(false))
+```
+
+24 - STICKY NAV
+
+Animation of the page navigation during scrolling
+
+```
+const nav = document.querySelector('#main');
+const topOfNav = nav.offsetTop;
+
+const fixNav = () => {
+  if (window.scrollY >= topOfNav) { 
+    document.body.classList.add('fixed-nav')
+    document.body.style.paddingTop = `${nav.offsetHeight}px`;
+  } else {
+    document.body.classList.remove('fixed-nav')
+    document.body.style.paddingTop = "0px";
+  }
+}
+
+window.addEventListener('scroll', fixNav);
+```
+
+25 - EVENT CAPTURE, PROPAGATION, BUBBLING AND ONCE
+
+Discovering different event settings
+
+```
+const button = document.querySelector('.btn');
+const divs = document.querySelectorAll('div');
+
+const logText = (target) => {
+  console.log(target)
+  target.stopPropagation(); 
+  // stop bubbling, will not ripple and trigger events in other divs
+}
+
+divs.forEach(div => div.addEventListener('click', logText, {
+    capture: false
+}));
+// capture - will trigger events from bottom if false
+
+button.addEventListener('click', () => {
+  console.log('click!')
+}, {
+  once: true
+})
+// once - unbounding, removing from click event
+```
+
+26 - STRIPE FOLLOW ALONG NAV
+
+Animation of navigation dropdown menu when mouse is hovering above
+
+```
+'use strict'
+
+const triggers = document.querySelectorAll('.cool>li');
+const background = document.querySelector('.dropdownBackground');
+const nav = document.querySelector('.top');
+
+const handleEnter = ({ target }) => {
+  background.classList.add('open');
+  target.classList.add('trigger-enter');
+
+  setTimeout(() => target.classList.contains('trigger-enter')
+      && target.classList.add('trigger-enter-active'), 150);
+
+  const dropdown = target.querySelector('.dropdown');
+  const dropdownCoords = dropdown.getBoundingClientRect();
+  const navCoords = nav.getBoundingClientRect();
+
+  const coords = {
+    height: dropdownCoords.height,
+    width: dropdownCoords.width,
+    top: dropdownCoords.top - navCoords.top,
+    left: dropdownCoords.left - navCoords.left,
+  };
+
+  background.style.width = `${coords.width}px`;
+  background.style.height = `${coords.height}px`;
+  background.style.setProperty('transform', `translate(${coords.left}px, ${coords.top}px)`);
+}
+
+const handleLeave = ({target}) => {
+  target.classList.remove('trigger-enter', 'trigger-enter-active');
+  background.classList.remove('open')
+}
+
+triggers.forEach(trigger => 
+  trigger.addEventListener('mouseenter', handleEnter)
+);
+triggers.forEach(trigger => 
+  trigger.addEventListener('mouseleave', handleLeave)
+);
+```
