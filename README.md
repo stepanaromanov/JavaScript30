@@ -684,7 +684,7 @@ const secondsLeft = seconds - (hours * 3600) - (minutes * 60);
 console.log(`Total duration is ${hours} hours ${minutes} minutes ${secondsLeft} seconds.`)
 ```
 
-19 - WEBCAM FUN
+19 WEBCAM FUN
 
 Creating javascript web cam app with following functionality: color filters, making and downloading snapshots, audio sounds
 
@@ -755,7 +755,7 @@ video.addEventListener('canplay', paintToCanvas)
 document.querySelector(".takePhoto").addEventListener("click", takePhoto);
 ```
 
-20 - SPEECH DETECTION
+20 SPEECH DETECTION
 
 Creating speech recognition interface which uses microphone
 
@@ -788,7 +788,7 @@ recognition.addEventListener('end', recognition.start);
 recognition.start();
 ``` 
 
-21 - GEOLOCATION
+21 GEOLOCATION
 
 Creating geo location interface
 
@@ -807,7 +807,7 @@ navigator.geolocation.watchPosition((data) => {
 });
 ```
 
-22 - FOLLOW ALONG LINK HIGHLIGHTER
+22 FOLLOW ALONG LINK HIGHLIGHTER
 
 Highlight page links when mouse hover over them
 
@@ -839,7 +839,7 @@ document
           });
 ```
 
-23 - SPEECH SYNTHESIS
+23 SPEECH SYNTHESIS
 
 Speech synthesis from text message with selected language, voice, rate and pitch
 
@@ -890,7 +890,7 @@ speakButton.addEventListener('click', toggle())
 stopButton.addEventListener('click', toggle(false))
 ```
 
-24 - STICKY NAV
+24 STICKY NAV
 
 Animation of the page navigation during scrolling
 
@@ -911,7 +911,7 @@ const fixNav = () => {
 window.addEventListener('scroll', fixNav);
 ```
 
-25 - EVENT CAPTURE, PROPAGATION, BUBBLING AND ONCE
+25 EVENT CAPTURE, PROPAGATION, BUBBLING AND ONCE
 
 Discovering different event settings
 
@@ -938,7 +938,7 @@ button.addEventListener('click', () => {
 // once - unbounding, removing from click event
 ```
 
-26 - STRIPE FOLLOW ALONG NAV
+26 STRIPE FOLLOW ALONG NAV
 
 Animation of navigation dropdown menu when mouse is hovering above
 
@@ -983,4 +983,204 @@ triggers.forEach(trigger =>
 triggers.forEach(trigger => 
   trigger.addEventListener('mouseleave', handleLeave)
 );
+```
+27 CLICK AND DRAG
+
+Scroll slider by mouse dragging
+
+```
+'use strict';
+
+const slider = document.querySelector('.items');
+let isDown = false;
+let startX;
+let scrollLeft;
+
+const startMouse = (event) => {
+  isDown = true;
+  slider.classList.add('.active');
+  startX = event.pageX - slider.offsetLeft;
+  scrollLeft = slider.scrollLeft;
+};
+
+const leaveMouse = () => {
+  isDown = false; 
+  slider.classList.remove('.active');
+};
+
+const endMouse = () => {
+  isDown = false;
+  slider.classList.remove('.active');
+};
+
+const startScroll = (event) => {
+  if (!isDown) return;
+  event.preventDefault();
+  const x = event.pageX - slider.offsetLeft;
+  const walk = (x - startX) * 2;
+  slider.scrollLeft = scrollLeft - walk;
+};
+
+slider.addEventListener('mousedown', startMouse);
+slider.addEventListener('mouseleave', leaveMouse);
+slider.addEventListener('mouseup', endMouse);
+slider.addEventListener('mousemove', startScroll);
+
+```
+
+28 VIDEO SPEED CONTROLLER
+
+Building an interface which controls video speed with mouse click
+
+```
+'use strict';
+
+const speed = document.querySelector('.speed');
+const bar = speed.querySelector('.speed-bar');
+const video = document.querySelector('.flex');
+
+const min = 0.5;
+const max = 3;
+
+let mouseDown = false;
+
+const changePlaybackRate = ({ pageY, currentTarget }) => {
+  if (!mouseDown) return null;
+  const y = pageY - currentTarget.offsetTop;
+  const percent = y / currentTarget.offsetHeight;
+  const height = `${Math.round(percent * 100)}%`;
+  const playbackRate = (max - min) * percent + min;
+  bar.style.height = height;
+  bar.textContent = `${playbackRate.toFixed(2)}×`;
+  video.playbackRate = playbackRate;
+};
+
+speed.addEventListener('mousedown', (event) => { mouseDown = true, changePlaybackRate(event) });
+speed.addEventListener('mouseup', () => mouseDown = false);  
+speed.addEventListener('mouseleave', () => mouseDown = false);  
+speed.addEventListener('mousemove', changePlaybackRate);  
+```
+
+29 COUNTDOWN TIMER
+
+Creating Pomodoro countdown timer that will show how many seconds are left in a task
+
+```
+'use strict';
+
+let countdown;
+
+const timerDisplay = document.querySelector('.display__time-left');
+const endTime = document.querySelector('.display__end-time');
+const buttons = document.querySelectorAll('[data-time]');
+
+const timer = (seconds) => {
+  clearInterval(countdown);
+
+  const now = Date.now();
+  const then = now + seconds * 1000;
+
+  displayTimeLeft(seconds);
+  displayEndTime(then);
+
+  countdown = setInterval(() => {
+    const secondsLeft = Math.round((then - Date.now()) / 1000);
+    if (secondsLeft < 0) {
+      clearInterval(countdown);
+      return;
+    }
+    displayTimeLeft(secondsLeft);
+  }, 1000);
+}
+
+const displayTimeLeft = (seconds) => { 
+  const minutes = Math.floor(seconds / 60);
+  const remainderSeconds = seconds % 60;
+  const display = `${minutes}:${remainderSeconds < 10 ? '0' : ''}${remainderSeconds}`;
+  document.title = display;
+  timerDisplay.textContent = display;
+}
+
+const displayEndTime = (timestamp) => { 
+  const end = new Date(timestamp);
+  const hour = end.getHours();
+  const minutes = end.getMinutes();
+  endTime.textContent = `Be Back At ${hour > 12 ? hour - 12 : hour}:${minutes}`;
+}
+
+const startTimer = ({target}) => {
+  const seconds = parseInt(target.dataset.time);
+  timer(seconds);
+}
+
+const customTimer = (event) => {
+  event.preventDefault();
+  const mins = event.target.minutes.value;
+  timer(mins * 60);
+  event.target.reset();
+}
+
+buttons.forEach(button => button.addEventListener('click', startTimer));
+document.customForm.addEventListener('submit', customTimer);
+```
+
+30 WHACK A MOLE
+
+Build an interactive game where moles popping up from the holes
+
+```
+'use strict';
+
+const holes = document.querySelectorAll('.hole');
+const scoreBoard = document.querySelector('.score');
+const moles = document.querySelectorAll('.mole');
+let lastHole = null;
+let timeUp = false;
+let score = 0;
+
+const randomTime = (min, max) => {
+  return Math.round(Math.random() * (max - min) + min);
+}
+
+const randomHole = (holes) => {
+  const idx = Math.floor(Math.random() * holes.length);
+  const hole = holes[idx];
+  if (hole === lastHole) {
+    return randomHole(holes);
+  }
+  lastHole = hole;
+  return hole;
+}
+
+const peep = () => {
+  const time = randomTime(200, 1000);
+  const hole = randomHole(holes);
+  hole.classList.add('up');
+  setTimeout(() => {
+    hole.classList.remove('up');
+    if (!timeUp) {
+      peep();
+    }
+  }, time);
+} 
+
+const startGame = () => {
+  scoreBoard.textContent = 0;
+  score = 0;
+  timeUp = false;
+  peep();
+  setTimeout(() => {
+    timeUp = true;
+  }, 10000)
+}
+
+const bonk = (event) => {
+  console.log(event)
+  if (!event.isTrusted) return null;
+  score ++;
+  event.target.classList.remove('up');
+  scoreBoard.textContent = score;
+}
+
+moles.forEach(mole => mole.addEventListener('click', bonk));
 ```

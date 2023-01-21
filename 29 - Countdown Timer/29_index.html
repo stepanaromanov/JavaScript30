@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Countdown Timer</title>
+  <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="timer">
+    <div class="timer__controls">
+      <button data-time="20" class="timer__button">20 Secs</button>
+      <button data-time="300" class="timer__button">Work 5</button>
+      <button data-time="900" class="timer__button">Quick 15</button>
+      <button data-time="1200" class="timer__button">Snack 20</button>
+      <button data-time="3600" class="timer__button">Lunch Break</button>
+      <form name="customForm" id="custom">
+        <input type="text" name="minutes" placeholder="Enter Minutes">
+      </form>
+    </div>
+    <div class="display">
+      <h1 class="display__time-left"></h1>
+      <p class="display__end-time"></p>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+
+    let countdown;
+
+    const timerDisplay = document.querySelector('.display__time-left');
+    const endTime = document.querySelector('.display__end-time');
+    const buttons = document.querySelectorAll('[data-time]');
+
+    const timer = (seconds) => {
+      clearInterval(countdown);
+
+      const now = Date.now();
+      const then = now + seconds * 1000;
+
+      displayTimeLeft(seconds);
+      displayEndTime(then);
+
+      countdown = setInterval(() => {
+        const secondsLeft = Math.round((then - Date.now()) / 1000);
+        if (secondsLeft < 0) {
+          clearInterval(countdown);
+          return;
+        }
+        displayTimeLeft(secondsLeft);
+      }, 1000);
+    }
+
+    const displayTimeLeft = (seconds) => { 
+      const minutes = Math.floor(seconds / 60);
+      const remainderSeconds = seconds % 60;
+      const display = `${minutes}:${remainderSeconds < 10 ? '0' : ''}${remainderSeconds}`;
+      document.title = display;
+      timerDisplay.textContent = display;
+    }
+
+    const displayEndTime = (timestamp) => { 
+      const end = new Date(timestamp);
+      const hour = end.getHours();
+      const minutes = end.getMinutes();
+      endTime.textContent = `Be Back At ${hour > 12 ? hour - 12 : hour}:${minutes}`;
+    }
+
+    const startTimer = ({target}) => {
+      const seconds = parseInt(target.dataset.time);
+      timer(seconds);
+    }
+
+    const customTimer = (event) => {
+      event.preventDefault();
+      const mins = event.target.minutes.value;
+      timer(mins * 60);
+      event.target.reset();
+    }
+
+    buttons.forEach(button => button.addEventListener('click', startTimer));
+    document.customForm.addEventListener('submit', customTimer);
+
+  </script>
+</body>
+</html>

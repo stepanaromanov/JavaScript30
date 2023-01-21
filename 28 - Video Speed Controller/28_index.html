@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Video Speed Scrubber</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="wrapper">
+    <video class="flex" width="765" height="430" src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4" loop controls></video>
+    <div class="speed">
+      <div class="speed-bar">1×</div>
+    </div>
+  </div>
+<script>
+  'use strict';
+
+  const speed = document.querySelector('.speed');
+  const bar = speed.querySelector('.speed-bar');
+  const video = document.querySelector('.flex');
+
+  const min = 0.5;
+  const max = 3;
+
+  let mouseDown = false;
+
+  const changePlaybackRate = ({ pageY, currentTarget }) => {
+    if (!mouseDown) return null;
+    const y = pageY - currentTarget.offsetTop;
+    const percent = y / currentTarget.offsetHeight;
+    const height = `${Math.round(percent * 100)}%`;
+    const playbackRate = (max - min) * percent + min;
+    bar.style.height = height;
+    bar.textContent = `${playbackRate.toFixed(2)}×`;
+    video.playbackRate = playbackRate;
+  };
+
+  speed.addEventListener('mousedown', (event) => { mouseDown = true, changePlaybackRate(event) });
+  speed.addEventListener('mouseup', () => mouseDown = false);  
+  speed.addEventListener('mouseleave', () => mouseDown = false);  
+  speed.addEventListener('mousemove', changePlaybackRate);  
+  
+</script>
+</body>
+</html>
